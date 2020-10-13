@@ -88,8 +88,8 @@ def stations():
     ###################################################
 
     ################### Processing ####################
-    all_passengers = []
-    for passenger in results:
+    all_stations = []
+    for stations in results:
         passenger_dict = {}
         passenger_dict['name'] = {'first':passenger.name.split(' ')[1],'last':passenger.name.split(' ')[0]}
         passenger_dict['age'] = passenger.age
@@ -98,7 +98,33 @@ def stations():
         all_passengers.append(passenger_dict)
     ####################################################
 
-    return jsonify(all_passengers)
+    return jsonify(all_stations)
+
+
+@app.route('/api/v1.0/tobs')
+def tobs():
+
+    return (
+        some stuff....
+    )
+
+@app.route('/api/v1.0/start')
+def start():
+
+    return (
+        some stuff....
+    )
+
+
+@app.route('/api/v1.0/start/end')
+def start_end():
+
+    return (
+        some stuff....
+    )
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
