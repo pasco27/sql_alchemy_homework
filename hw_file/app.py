@@ -9,7 +9,7 @@ import os
 import sqlalchemy
 from sqlalchemy.ext.automap import automap_base
 from sqlalchemy.orm import Session
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, func
 
 from flask import Flask, jsonify
 
@@ -38,7 +38,7 @@ app = Flask(__name__)
 
 @app.route("/")
 def welcome():
-    """List all available api routes."""
+    # List all available api routes
     return (
         f"Welcome to Beautiful Hawaii!<br/>"
         f"Available Routes:<br/>"
@@ -130,60 +130,53 @@ def tobs():
 @app.route('/api/v1.0/temps/<start>')
 @app.route('/api/v1.0/temps/<start>/<end>')
 def start_end(start = None, end = None):
-    """Returning min, max, and average temp for this range
-        if available, else 404 error message if range unavailable"""
-
-# Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
-# When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than and equal to the start date.
-# When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the start and end date inclusive
+    # Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start or start-end range.
+    # When given the start only, calculate TMIN, TAVG, and TMAX for all dates greater than and equal to the start date.
+    # When given the start and the end date, calculate the TMIN, TAVG, and TMAX for dates between the start and end date inclusive
 
     session = Session(engine)
-
-    if end:
-
-        # SELECT  * FROM... 
-        # WHERE
-
-        results_if_end = session.query(func.min(measurement.tobs).label('min'), func.max(measurement.tobs).label('max'), func.avg(measurement.tobs).label('avg')
-        something = results_if_end.filter(measurement.date >= start).filter(measurement.date >= end).all()
-
-        # lowest2 = session.query(measurement.station, func.min(measurement.tobs).label('min')).filter(measurement.station).all()
-        # highest2 = session.query(measurement.station, func.max(measurement.tobs).label('max')).filter(measurement.station).all()
-        # average2 = session.query(measurement.station, func.avg(measurement.tobs).label('avg')).filter(measurement.station).all()
-
-    else:
-
-        results_else = session.query(func.min(measurement.tobs).label('min'), func.max(measurement.tobs).label('max'), func.avg(measurement.tobs).label('avg')
-        somethingelse = results_else.filter(measurement.date >= start).all()
-
-
-    # close session
-    session.close()
-
-
-    # hawaii_measurements = []
-    # for row in precip:
-    #     measurements = {}
-    
-    #     measurements[row.date]= row.prcp
-    #     hawaii_measurements.append(measurements) 
-
-    # return jsonify(hawaii_measurements)
-
-
-    # do I even need this? it was in the example...
-    # search_terms = start.replace(" ", "").lower()
-
-    # for temp in start_end_temps:
 
     # loop over the sqlite file, and if a date range is 
     # if end:
     #         #find the temps in the range
 
     # else:
-    #         #find the temps starting at this date      
+    #         #find the temps starting at this date 
 
-    return jsonify(...)
+    if end:
+
+        # SELECT  * FROM... 
+        # WHERE
+
+        # copied this code over from my jupyter notebook which helped form the filter below
+        # lowest2 = session.query(measurement.station, func.min(measurement.tobs).label('min')).filter(measurement.station).all()
+        # highest2 = session.query(measurement.station, func.max(measurement.tobs).label('max')).filter(measurement.station).all()
+        # average2 = session.query(measurement.station, func.avg(measurement.tobs).label('avg')).filter(measurement.station).all()
+
+        init_query = session.query(func.min(measurement.tobs).label('min'), func.max(measurement.tobs).label('max'), func.avg(measurement.tobs).label('avg'))
+        results_end = init_query.filter(measurement.date >= start).filter(measurement.date <= end).all()
+
+    else:
+
+        init_query = session.query(func.min(measurement.tobs).label('min'), func.max(measurement.tobs).label('max'), func.avg(measurement.tobs).label('avg'))
+        results_end = init_query.filter(measurement.date >= start).all()
+
+    # close session
+    session.close()
+
+
+
+    hawaii_measurements_dates = []
+    for row in results_end:
+        measurements = {}
+    # here, utlizing my orig earlier idea from the Titanic example
+        measurements['min temp']= row.min
+        measurements['max temp']= row.max
+        measurements['average temp']= row.avg
+        hawaii_measurements_dates.append(measurements) 
+
+    return jsonify(hawaii_measurements_dates)   
+
 
 
 if __name__ == '__main__':
