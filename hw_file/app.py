@@ -101,7 +101,7 @@ def tobs():
     
     # Query the database
     session = Session(engine)
-    dates_and_temps = session.query(measurement.date, measurement.prcp).filter(measurement.station == 'USC00519281').all()
+    dates_and_temps = session.query(measurement.date, measurement.prcp).filter(measurement.station == 'USC00519281').filter(measurement.date >= "2016-08-23").all()
 
     #These were from MIN, and latest year ... from jupyter notebook
     #lowest2 = session.query(measurement.station, func.min(measurement.tobs).label('min')).filter(measurement.station=='USC00519281').all()
@@ -140,30 +140,39 @@ def start_end(start = None, end = None):
     session = Session(engine)
 
     if end:
-            #find the temps in the range
-            #one filters on both 
-    # SELECT  * FROM... 
-    # WHERE
 
-        lo    = session.query(func.min(measurement.tobs).label('min'), func.max(measurement.tobs).label('max'), func.avg(measurement.tobs).label('avg')
+        # SELECT  * FROM... 
+        # WHERE
 
+        results_if_end = session.query(func.min(measurement.tobs).label('min'), func.max(measurement.tobs).label('max'), func.avg(measurement.tobs).label('avg')
+        something = results_if_end.filter(measurement.date >= start).filter(measurement.date >= end).all()
 
-        lowest2 = session.query(measurement.station, func.min(measurement.tobs).label('min')).filter(measurement.station).all()
-        highest2 = session.query(measurement.station, func.max(measurement.tobs).label('max')).filter(measurement.station).all()
-        average2 = session.query(measurement.station, func.avg(measurement.tobs).label('avg')).filter(measurement.station).all()
+        # lowest2 = session.query(measurement.station, func.min(measurement.tobs).label('min')).filter(measurement.station).all()
+        # highest2 = session.query(measurement.station, func.max(measurement.tobs).label('max')).filter(measurement.station).all()
+        # average2 = session.query(measurement.station, func.avg(measurement.tobs).label('avg')).filter(measurement.station).all()
 
     else:
-        lowest2 = session.query(measurement.station, func.min(measurement.tobs).label('min')).filter(measurement.station).all()
-        highest2 = session.query(measurement.station, func.max(measurement.tobs).label('max')).filter(measurement.station).all()
-        average2 = session.query(measurement.station, func.avg(measurement.tobs).label('avg')).filter(measurement.station).all()
+
+        results_else = session.query(func.min(measurement.tobs).label('min'), func.max(measurement.tobs).label('max'), func.avg(measurement.tobs).label('avg')
+        somethingelse = results_else.filter(measurement.date >= start).all()
+
 
     # close session
     session.close()
 
 
+    # hawaii_measurements = []
+    # for row in precip:
+    #     measurements = {}
+    
+    #     measurements[row.date]= row.prcp
+    #     hawaii_measurements.append(measurements) 
+
+    # return jsonify(hawaii_measurements)
+
+
     # do I even need this? it was in the example...
     # search_terms = start.replace(" ", "").lower()
-
 
     # for temp in start_end_temps:
 
@@ -174,9 +183,7 @@ def start_end(start = None, end = None):
     # else:
     #         #find the temps starting at this date      
 
-    return jsonify(start_end_temps)
-
-
+    return jsonify(...)
 
 
 if __name__ == '__main__':
