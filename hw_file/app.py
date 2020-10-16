@@ -113,7 +113,7 @@ def tobs():
     
     return jsonify(dates_and_temps)
 
-
+###### STARTED this route, but worked with tutor and created the below in which both start/end were created in one route!
 # @app.route('/api/v1.0/<start>')
 # def start():
 #     # Return a JSON list of the minimum temperature, the average temperature, and the max temperature for a given start date
